@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block page %}
+
+<p>
+    <p><h1>Progress</h1></p>
+    <p>
+        <div class="row g-5">
+          <div class="col-md-12 overflow-auto">
+              <table class="table table-hover">
+              <thead>
+                <tr>
+                    <th scope="col">Cluster</th>
+                    <th scope="col">Size</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for cid, prop in data['clusters'].items() %}
+                <tr>
+                  <td scope="row">{{ cid }}</td>
+                    <td scope="row">{{ prop['size'] }}</td>
+                  <td scope="row">{{ prop['status'] }}</td>
+                  <td scope="row"><a href="/{{ data['mode'] }}/{{ cid }}">Edit</a></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </p>
+    <p>
+        <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#confirm-generate">Generate clusters</button>
+        <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#confirm-discard">Discard all</button>
+    </p>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirm-generate" tabindex="-1" aria-labelledby="confirm-generate-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="/generate" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirm-generate-label">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">
+                        <label for="new-cluster-file-name" class="col-form-label">New cluster file name:</label>
+                        <input type="text" size=255 class="form-control" id="new-cluster-file-name" name="new-cluster-file-name" />
+                    </p>
+                    <p><ul>
+                    <li>By clicking "Yes", the annotations will be used to generate the new clusters. This can NOT be undone.</li>
+                    <li>All un-annotated clusters will be kept as-is.</li>
+                    <li>If the file with same name exists, it will be overwritten.</li></ul></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <input type="submit" class="btn btn-success" name="submit" value="Yes"/>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-discard" tabindex="-1" aria-labelledby="confirm-generate-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="/discard" method="post">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirm-generate-label">Confirmation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure to discard all the annotations? This can NOT be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        <input type="submit" class="btn btn-success" name="submit" value="Yes"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

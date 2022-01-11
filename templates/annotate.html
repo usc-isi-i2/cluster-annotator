@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block page %}
+
+<div>
+    {% if 'alert' in message %}
+    <div class="alert alert-danger" role="alert">
+      {{ message['alert'] }}
+    </div>
+    {% endif %}
+    <p><h1>Cluster <mark>{{ data['cluster_id'] }}</mark></h1></p>
+    <form action="/annotate" method="post">
+    <p>
+        <div class="row g-5">
+          <div class="col-md-12 overflow-auto">
+              <table class="table table-hover">
+              <thead>
+                <tr>
+                    <th scope="col">Cluster</th>
+                    {% for col in data['data_columns'] %}
+                    <th scope="col">{{ col }}</th>
+                    {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+              {% for rid, row in data['records'].items() %}
+                <tr>
+                  <td><input id="{{ rid }}" name="{{ rid }}" type="group" size=3 value="0" style="text-align:right" /></td>
+                  {% for cell in row.values() %}
+                  <td scope="row">{{ cell }}</td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </p>
+    <p><input type="submit" name="submit" class="btn btn-success" value="Save and Do Next" /><input type="submit" class="btn btn-secondary ms-2" name="skip" value="Skip" /></p>
+    <input type="hidden" name="cluster_id" value="{{ data['cluster_id'] }}">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block page %}
+
+<div>
+    <p><h1>Merge Cluster <mark>{{ data['cluster_id'] }}</mark></h1></p>
+    <form action="/merge/{{ data['cluster_id'] }}" method="post">
+    <p>
+    <div class="row g-5">
+      <div class="col-md-12 overflow-auto">
+          <table class="table table-hover">
+          <thead>
+            <tr>
+                {% for col in data['data_columns'] %}
+                <th scope="col">{{ col }}</th>
+                {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+          {% for rid, row in data['records'].items() %}
+            <tr>
+              {% for k, v in row.items() %}
+                {% if k != 'new_cid' %}
+                  <td scope="row">{{ v }}</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </p>
+    <br>
+    <p><h3>Cluster Candidates</h3></p>
+    <p>
+    {% if data['similar_clusters']|length > 0 %}
+    <div class="accordion accordion-flush" id="accordion-panels">
+      {% for cid, cdata in data['similar_clusters'].items() %}
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panel-open-{{ cid }}" style="position: relative">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panel-collapse-{{ cid }}" aria-expanded="true" aria-controls="panel-collapse-{{ cid }}"></button>
+          <div style="position: absolute; top: 15px; left: 15px; font-size: 0.5em; z-index: 999;">
+              {% if cdata['is_annotated_the_same'] %}
+              <input class="form-check-input" type="checkbox" id="checkbox-{{ cid }}" name="cid-{{ cid }}" checked/>
+              {% else %}
+              <input class="form-check-input" type="checkbox" id="checkbox-{{ cid }}" name="cid-{{ cid }}"/>
+              {% endif %}
+              <label class="form-check-label ms-2" for="checkbox-{{ cid }}">{{ cid }}</label>
+          </div>
+        </h2>
+        <div id="panel-collapse-{{ cid }}" class="accordion-collapse collapse show" aria-labelledby="panel-open-{{ cid }}">
+          <div class="accordion-body">
+
+            <div class="row g-5">
+              <div class="col-md-12 overflow-auto">
+                  <table class="table table-hover">
+                  <thead>
+                    <tr>
+                        {% for col in data['data_columns'] %}
+                        <th scope="col">{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for rid, row in cdata['records'].items() %}
+                      <tr>
+                          {% for k, v in row.items() %}
+                              {% if k != 'new_cid' %}
+                                  <td scope="row">{{ v }}</td>
+                              {% endif %}
+                          {% endfor %}
+                      </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div><!--end of accordion-panels-->
+    {% else %}
+        No candidates available.
+    {% endif %}
+    </p>
+    <p>
+        <input type="submit" class="btn btn-success" name="submit" value="Save and Do Next" />
+        <input type="submit" class="btn btn-secondary" name="skip" value="Skip" />
+        <a href="/progress"><button class="btn btn-secondary" type="button">Review Progress</button></a>
+    </p>
+    </form>
+
+</div>
+{% endblock %}

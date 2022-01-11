@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cluster Annotator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+</head>
+
+<body>
+<div id="main" class="col-8 mx-auto p-3 py-md-5">
+  <header class="d-flex align-items-center pb-3 mb-5 border-bottom">
+    <a href="/overview" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-journal-album" viewBox="0 0 16 16">
+          <path d="M5.5 4a.5.5 0 0 0-.5.5v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-5a.5.5 0 0 0-.5-.5h-5zm1 7a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3z"/>
+          <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+          <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+        </svg>
+      <span class="fs-4 ms-2">Cluster Annotator</span>
+    </a>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="toggle-wide-mode">
+      <label class="form-check-label text-secondary" for="toggle-wide-mode">Wide mode</label>
+    </div>
+  </header>
+  <main>
+{% block page %}
+{% endblock %}
+  </main>
+  <footer class="pt-5 my-5 text-muted">
+    &copy; 2022 &middot; USC/ISI
+  </footer>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script>
+// prevent the enter key from submitting the form
+$(document).on('keydown', 'form', function(event) {
+    return event.key != 'Enter';
+});
+
+$(document).ready(function() {
+
+    let main_div = $('#main');
+    let toggle_wide_mode_switch = $('#toggle-wide-mode');
+
+    function toggle_wide_mode() {
+        if (localStorage.getItem('wide-mode') === 'on') {
+            main_div.removeClass('col-8');
+            main_div.addClass('col-12');
+            toggle_wide_mode_switch.prop('checked', true);
+        } else {
+            main_div.removeClass('col-12');
+            main_div.addClass('col-8');
+            toggle_wide_mode_switch.prop('checked', false);
+        }
+    }
+    toggle_wide_mode();
+
+    toggle_wide_mode_switch.click(function() {
+        if($(this).is(':checked')) {
+            localStorage.setItem('wide-mode', 'on');
+        } else {
+            localStorage.removeItem('wide-mode');
+        }
+        toggle_wide_mode();
+    });
+});
+</script>
+<script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+{% block script %}
+{% endblock %}
+</html>
