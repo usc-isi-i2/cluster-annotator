@@ -2,7 +2,7 @@ import json
 import logging
 
 CONFIG = None
-with open('config.json', 'w') as f:
+with open('config.json') as f:
     CONFIG = json.load(f)
 
 
