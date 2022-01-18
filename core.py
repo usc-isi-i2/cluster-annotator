@@ -85,9 +85,6 @@ class Annotator(object):
         # assignment = {"rid": "number", ...}
         ii = defaultdict(list)
         for rid, new_id in assignment.items():
-            new_id = new_id.strip()
-            if new_id == '':
-                continue
             ii[new_id].append(rid)
 
         # update to db
@@ -345,7 +342,7 @@ class StatusDBHelper(object):
         self.conn.commit()
 
     def generate_split(self):
-        query = '''SELECT rid, old_cid, new_cid FROM records'''
+        query = '''SELECT rid, old_cid, new_cid FROM records WHERE new_cid != -1'''  # -1 indicates discard
         return {row['rid']: f'{row["old_cid"]}.{row["new_cid"]}' for row in self.cur.execute(query).fetchall()}
 
     def generate_merge(self):
