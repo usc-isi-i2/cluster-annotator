@@ -51,19 +51,24 @@ def initialize():
     params = request.form.to_dict()
     cluster_file_path = os.path.join(CONFIG['cluster_file_dir'], params['select-cluster-file'])
     error = annotator.initialize_annotation(params['mode'].lower(), cluster_file_path)
-    return redirect(url_for('overview') + f'?error={error}' if error else '')
+    url = url_for('overview')
+    if error:
+        url += f'?error={error}'
+    return redirect(url)
 
 
 @app.route('/generate', methods=['POST'])
 def generate():
     params = request.form.to_dict()
-    try:
-        file_name = params['new-cluster-file-name']
-        new_cluster_file_path = os.path.join(CONFIG['cluster_file_dir'], file_name)
-        annotator.generate_annotation(new_cluster_file_path)
-        return redirect(url_for('overview'))
-    except:
-        return redirect(url_for('progress'))
+
+    file_name = params['new-cluster-file-name'].strip()
+    new_cluster_file_path = os.path.join(CONFIG['cluster_file_dir'], file_name)
+    error = annotator.generate_annotation(new_cluster_file_path)
+
+    url = url_for('overview')
+    if error:
+        url = url_for('progress') + f'?error={error}'
+    return redirect(url)
 
 
 @app.route('/discard', methods=['POST'])
@@ -74,12 +79,17 @@ def discard():
 
 @app.route('/progress', methods=['GET'])
 def progress():
+    message = {}
+    args = request.args.to_dict()
+    if 'error' in args:
+        message['error'] = args['error']
+
     data = {
         'mode': annotator.mode,
         'clusters': annotator.progress
 
     }
-    return render_template('progress.html', data=data)
+    return render_template('progress.html', data=data, message=message)
 
 
 @app.route('/split/<cid>', methods=['GET', 'POST'])
@@ -106,7 +116,7 @@ def split(cid):
                     return redirect(url_for('progress'))
                 return redirect(url_for('split', cid=next_cluster_id))
             except Exception as e:
-                logger.error(f'Invalid numbers assigned: {e}')
+                logger.error(f'app.split: {e}')
                 message['error'] = 'Invalid numbers assigned, please fix!'
 
 

@@ -59,7 +59,7 @@ class Annotator(object):
         except Exception as e:
             self.status_db.cleanup()
             self.status_db.initialize()
-            logger.error(f'Invalid file: {e}')
+            logger.error(f'Annotator.initialize_annotation: {e}')
             return 'Invalid file'
 
     def __del__(self):
@@ -118,11 +118,15 @@ class Annotator(object):
         for cid, rids in ii.items():
             res['clusters'].append({'id': cid, 'records': rids})
 
-        with open(new_cluster_file_path, 'w') as f:
-            json.dump(res, f)
+        try:
+            with open(new_cluster_file_path, 'w') as f:
+                json.dump(res, f)
 
-        self.status_db.cleanup()
-        self.status_db.initialize()
+            self.status_db.cleanup()
+            self.status_db.initialize()
+        except Exception as e:
+            logger.error(f'Annotator.generate_annotation: {e}')
+            return 'Generate annotation failed'
 
     def discard_annotation(self):
         self.status_db.cleanup()

@@ -2,7 +2,13 @@
 
 {% block page %}
 
-<p>
+<div>
+    {% if 'error' in message %}
+        <div class="alert alert-danger" role="alert">
+            {{ message['error'] }}
+        </div>
+    {% endif %}
+
     <p><h1>Progress</h1></p>
     <p>
         <div class="row g-5">
@@ -83,4 +89,5 @@
         </div>
     </div>
 
+</div>
 {% endblock %}
