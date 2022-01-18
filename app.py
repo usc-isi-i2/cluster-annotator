@@ -3,10 +3,11 @@ import os
 from flask import Flask, render_template, request, redirect, url_for
 from config import CONFIG
 
-from core import Annotator
+from core import Annotator, get_logger
 
 app = Flask(__name__)
 annotator = Annotator()
+logger = get_logger(__name__)
 
 
 @app.route('/')
@@ -50,16 +51,19 @@ def initialize():
     params = request.form.to_dict()
     cluster_file_path = os.path.join(CONFIG['cluster_file_dir'], params['select-cluster-file'])
     error = annotator.initialize_annotation(params['mode'].lower(), cluster_file_path)
-    return redirect(url_for('overview'))
-    # return redirect('/overview' + f'?error={error}' if error else '')
+    return redirect(url_for('overview') + f'?error={error}' if error else '')
 
 
 @app.route('/generate', methods=['POST'])
 def generate():
     params = request.form.to_dict()
-    new_cluster_file_path = os.path.join(CONFIG['cluster_file_dir'], params['new-cluster-file-name'])
-    annotator.generate_annotation(new_cluster_file_path)
-    return redirect(url_for('overview'))
+    try:
+        file_name = params['new-cluster-file-name']
+        new_cluster_file_path = os.path.join(CONFIG['cluster_file_dir'], file_name)
+        annotator.generate_annotation(new_cluster_file_path)
+        return redirect(url_for('overview'))
+    except:
+        return redirect(url_for('progress'))
 
 
 @app.route('/discard', methods=['POST'])
@@ -93,18 +97,18 @@ def split(cid):
         elif 'submit' in params:
             params.pop('submit')
 
-            params = list(filter(lambda kv: kv[0].startswith('cid-'), params.items()))
-            params = {k[4:]: v for k, v in params}
-            for k, v in params.items():
-                if not v.isnumeric() and v.strip() != '':
-                    message['error'] = 'Invalid numbers assigned, please fix!'
-                    break
-            else:
+            try:
+                params = list(filter(lambda kv: kv[0].startswith('cid-'), params.items()))
+                params = {k[4:]: int(v) for k, v in params}
                 annotator.annotate_cluster(cid, params)
                 next_cluster_id = annotator.get_next_cluster_id(cid)
                 if not next_cluster_id:
                     return redirect(url_for('progress'))
                 return redirect(url_for('split', cid=next_cluster_id))
+            except Exception as e:
+                logger.error(f'Invalid numbers assigned: {e}')
+                message['error'] = 'Invalid numbers assigned, please fix!'
+
 
     records = annotator.get_cluster(cid)
     data = {
