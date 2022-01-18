@@ -14,9 +14,7 @@ pip install -r requirements.txt
 
 - Configuration:
 
-The configuration file `config.json` needs to be created in the root of the directory.
-
-A typical config file formats like this:
+The configuration file needs to be prepared. A typical config file formats like this:
 
 ```
 {
@@ -43,5 +41,7 @@ A typical config file formats like this:
 - Execution:
 
 ```
-python app.py
+python starter.py --config config.json
 ```
+
+By default, the annotator searches for `config.json` in the root of the directory if it is not specified.

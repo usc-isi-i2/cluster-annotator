@@ -1,13 +1,13 @@
 import os
 
 from flask import Flask, render_template, request, redirect, url_for
-from config import CONFIG
 
-from core import Annotator, get_logger
+from core import Annotator
+from utils import get_logger, config
 
 app = Flask(__name__)
+logger = get_logger(__name__, config)
 annotator = Annotator()
-logger = get_logger(__name__)
 
 
 @app.route('/')
@@ -19,12 +19,12 @@ def overview():
         message['error'] = args['error']
 
     data = {
-        'data_file': CONFIG['data_file'],
-        'status_file': CONFIG['status_file'],
-        'data_id_column': CONFIG['data_id_column'],
+        'data_file': config['data_file'],
+        'status_file': config['status_file'],
+        'data_id_column': config['data_id_column'],
         'data_columns': annotator.data_columns,
-        'cluster_file_dir': CONFIG['cluster_file_dir'],
-        'cluster_file_list': os.listdir(CONFIG['cluster_file_dir']),
+        'cluster_file_dir': config['cluster_file_dir'],
+        'cluster_file_list': os.listdir(config['cluster_file_dir']),
     }
 
     status = annotator.status
@@ -49,7 +49,7 @@ def overview():
 @app.route('/initialize', methods=['POST'])
 def initialize():
     params = request.form.to_dict()
-    cluster_file_path = os.path.join(CONFIG['cluster_file_dir'], params['select-cluster-file'])
+    cluster_file_path = os.path.join(config['cluster_file_dir'], params['select-cluster-file'])
     error = annotator.initialize_annotation(params['mode'].lower(), cluster_file_path)
     url = url_for('overview')
     if error:
@@ -62,7 +62,7 @@ def generate():
     params = request.form.to_dict()
 
     file_name = params['new-cluster-file-name'].strip()
-    new_cluster_file_path = os.path.join(CONFIG['cluster_file_dir'], file_name)
+    new_cluster_file_path = os.path.join(config['cluster_file_dir'], file_name)
     error = annotator.generate_annotation(new_cluster_file_path)
 
     url = url_for('overview')
@@ -153,7 +153,7 @@ def merge(cid):
             return redirect(url_for('merge', cid=next_cluster_id))
 
     # cluster
-    records = annotator.get_cluster(cid, CONFIG['max_num_of_records'])
+    records = annotator.get_cluster(cid, config['max_num_of_records'])
     data = {
         'cluster_id': cid,
         'records': records,
@@ -166,11 +166,7 @@ def merge(cid):
     for cid, is_annotated_the_same in sim_cids.items():
         data['similar_clusters'][cid] = {
             'is_annotated_the_same': is_annotated_the_same,
-            'records': annotator.get_cluster(cid, CONFIG['max_num_of_records'])
+            'records': annotator.get_cluster(cid, config['max_num_of_records'])
         }
 
     return render_template('merge.html', data=data, message=message)
-
-
-if __name__ == '__main__':
-    app.run(debug=CONFIG['debug'], host=CONFIG['host'], port=CONFIG['port'])

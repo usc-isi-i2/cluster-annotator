@@ -4,33 +4,33 @@ from collections import defaultdict, OrderedDict
 import sqlite3
 import datetime
 
-from config import CONFIG, get_logger
+from utils import get_logger, config
 
 
-logger = get_logger(__name__)
+logger = get_logger(__name__, config)
 
 
 class Annotator(object):
     def __init__(self):
         # data file
         self.data = {}
-        with open(CONFIG['data_file'], 'r', newline='') as f:
+        with open(config['data_file'], 'r', newline='') as f:
             reader = csv.DictReader(f)
-            self.data_columns = CONFIG['data_columns'] if CONFIG['data_columns'] else reader.fieldnames
+            self.data_columns = config['data_columns'] if config['data_columns'] else reader.fieldnames
             for row in reader:
-                rid = row[CONFIG['data_id_column']]
+                rid = row[config['data_id_column']]
                 self.data[rid] = OrderedDict()
                 for k in self.data_columns:
                     self.data[rid][k] = row[k]
 
         # status file
-        self.status_db = StatusDBHelper(CONFIG['status_file'])
+        self.status_db = StatusDBHelper(config['status_file'])
         self.status_db.initialize()
 
     def initialize_annotation(self, mode, cluster_file_path):
         self.status_db.cleanup()
         self.status_db.initialize()
-        self.status_db.create_mode(mode, cluster_file_path, CONFIG['data_file'])
+        self.status_db.create_mode(mode, cluster_file_path, config['data_file'])
         try:
             with open(cluster_file_path) as f:
                 obj = json.load(f)

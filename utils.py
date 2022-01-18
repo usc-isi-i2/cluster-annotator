@@ -1,10 +1,6 @@
 import json
 import logging
 
-CONFIG = None
-with open('config.json') as f:
-    CONFIG = json.load(f)
-
 
 LOGGING_LEVEL = {
     'CRITICAL': logging.CRITICAL,
@@ -16,10 +12,18 @@ LOGGING_LEVEL = {
 }
 
 
-def get_logger(name):
+def get_logger(name, cfg):
     logger = logging.getLogger(name)
-    logger.setLevel(LOGGING_LEVEL[CONFIG['logging_level']])
-    handler = logging.FileHandler(CONFIG['logging_file'])
+    logger.setLevel(LOGGING_LEVEL[cfg['logging_level']])
+    handler = logging.FileHandler(cfg['logging_file'])
     handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - [%(levelname)s] %(message)s'))
     logger.addHandler(handler)
     return logger
+
+
+def get_config(filename):
+    with open(filename) as f:
+        return json.load(f)
+
+
+config = None
