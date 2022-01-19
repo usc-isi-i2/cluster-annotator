@@ -2,6 +2,7 @@
 
 Cluster Annotator is a general-purpose tool for annotating clusters.
 
+
 ## Usage
 
 - Installation:
@@ -45,3 +46,40 @@ python starter.py --config config.json
 ```
 
 By default, the annotator searches for `config.json` in the root of the directory if it is not specified.
+
+## File format
+
+Two files are required for running the annotator.
+
+- *Cluster file* is a JSON file with the following format:
+
+```
+{
+    "clusters": [
+        {
+            "id": "unique cluster id",
+            "records": [
+                "unique record id",
+                ...
+            ]
+        },
+        ...
+    ],
+    "similar_clusters": [
+        [
+            "cluster id",
+            ...
+        ],
+        ...
+    ]
+}
+```
+
+> `similar_clusters` is only required in merge mode. This needs to be generated with external command or custom script.
+> One record id can only appear in one cluster; one cluster id can only appear in one similar cluster.
+
+- *Data file* is a CSV file. One of the columns indicates the record id.
+
+## Workflow
+
+![flowchart](static/cluster-annotator.png)
