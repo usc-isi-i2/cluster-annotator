@@ -104,17 +104,20 @@ def split(cid):
             if not next_cluster_id:
                 return redirect(url_for('progress'))
             return redirect(url_for('split', cid=next_cluster_id))
-        elif 'submit' in params:
-            params.pop('submit')
+        elif 'save-review' in params or 'save-next' in params:
 
             try:
-                params = list(filter(lambda kv: kv[0].startswith('cid-'), params.items()))
-                params = {k[4:]: int(v) for k, v in params}
-                annotator.annotate_cluster(cid, params)
+                assignment = list(filter(lambda kv: kv[0].startswith('cid-'), params.items()))
+                assignment = {k[4:]: int(v) for k, v in assignment}
+                annotator.annotate_cluster(cid, assignment)
                 next_cluster_id = annotator.get_next_cluster_id(cid)
                 if not next_cluster_id:
                     return redirect(url_for('progress'))
-                return redirect(url_for('split', cid=next_cluster_id))
+
+                if 'save-review' in params:
+                    return redirect(url_for('progress'))
+                else:
+                    return redirect(url_for('split', cid=next_cluster_id))
             except Exception as e:
                 logger.error(f'app.split: {e}')
                 message['error'] = 'Invalid numbers assigned, please fix!'
@@ -142,15 +145,18 @@ def merge(cid):
             if not next_cluster_id:
                 return redirect(url_for('progress'))
             return redirect(url_for('merge', cid=next_cluster_id))
-        elif 'submit' in params:
-            params.pop('submit')
+        elif 'save-review' in params or 'save-next' in params:
 
             selected_clusters = [k[4:] for k in list(filter(lambda k: k.startswith('cid-'), params.keys()))]
             annotator.merge_cluster(cid, selected_clusters)
             next_cluster_id = annotator.get_next_cluster_id(cid)
             if not next_cluster_id:
                 return redirect(url_for('progress'))
-            return redirect(url_for('merge', cid=next_cluster_id))
+
+            if 'save-review' in params:
+                return redirect(url_for('progress'))
+            else:
+                return redirect(url_for('merge', cid=next_cluster_id))
 
     # cluster
     records = annotator.get_cluster(cid, config['max_num_of_records'])
