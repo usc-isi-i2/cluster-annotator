@@ -142,7 +142,10 @@ class Annotator(object):
                 return 'Annotated'
             return ''
 
-        return {c['cid']: {'status': gen_status(c), 'size': c['size']} for c in self.status_db.cluster_list()}
+        name_col = config['cluster_name_column']
+        return {c['cid']: {'status': gen_status(c), 'size': c['size'],
+                           'name': self.data[c['r_rid']][name_col]}
+                for c in self.status_db.cluster_list()}
 
     @property
     def mode(self):
@@ -282,8 +285,17 @@ class StatusDBHelper(object):
         }
 
     def cluster_list(self):
-        query = '''SELECT cid, annotated, ignored, size FROM clusters'''
-        return [{'cid': row['cid'], 'annotated': row['annotated'], 'ignored': row['ignored'], 'size': row['size']}
+        # select the minimum rid from each cluster as the representative rid
+        query = '''
+        SELECT rid, cid, annotated, ignored, size FROM records
+            LEFT JOIN clusters ON clusters.cid = records.old_cid
+            GROUP BY cid
+            HAVING rid = MIN(rid)
+            ORDER BY rid
+        '''
+        return [{'cid': row['cid'], 'annotated': row['annotated'],
+                 'ignored': row['ignored'], 'size': row['size'],
+                 'r_rid': row['rid']}
                 for row in self.cur.execute(query).fetchall()]
 
     def get_next_cluster_id(self, cid=None):

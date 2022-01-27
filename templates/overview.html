@@ -13,10 +13,12 @@
     </br>
     <p><h3>Settings</h3></p>
     <p><b>Data file:</b> <code>{{ data['data_file'] }}</code></p>
-    <p><b>Data ID columns:</b> <code>{{ data['data_id_column'] }}</code></p>
+    <p><b>Data ID column:</b> <code>{{ data['data_id_column'] }}</code></p>
     <p><b>Data columns:</b> <code>{{ data['data_columns'] }}</code></p>
     <p><b>Cluster file directory:</b> <code>{{ data['cluster_file_dir'] }}</code></p>
     <p><b>Status file:</b> <code>{{ data['status_file'] }}</code></p>
+    <p><b>Cluster name column:</b> <code>{{ data['cluster_name_column'] }}</code></p>
+    <p><b>Maximum number of records to show (Merge mode):</b> <code>{{ data['max_num_of_records'] }}</code></p>
     {%  if 'mode' not in data %}
     </br>
     <form method="post" action="/initialize">

@@ -32,6 +32,7 @@ The configuration file needs to be prepared. A typical config file formats like 
         "Plaintiff1 Address"
     ],
     "data_id_column": "Case Number",
+    "cluster_name_column": "Plaintiff Name",
     "cluster_file_dir": "data",
     "status_file": "data/status.db",
     

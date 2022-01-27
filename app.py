@@ -25,6 +25,8 @@ def overview():
         'data_columns': annotator.data_columns,
         'cluster_file_dir': config['cluster_file_dir'],
         'cluster_file_list': os.listdir(config['cluster_file_dir']),
+        'cluster_name_column': config['cluster_name_column'],
+        'max_num_of_records': config['max_num_of_records']
     }
 
     status = annotator.status

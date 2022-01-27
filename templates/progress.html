@@ -17,6 +17,7 @@
               <thead>
                 <tr>
                     <th scope="col">Cluster</th>
+                    <th scope="col">Name</th>
                     <th scope="col">Size</th>
                     <th scope="col">Status</th>
                     <th scope="col"></th>
@@ -26,7 +27,8 @@
               {% for cid, prop in data['clusters'].items() %}
                 <tr>
                   <td scope="row">{{ cid }}</td>
-                    <td scope="row">{{ prop['size'] }}</td>
+                  <td scope="row">{{ prop['name'] }}</td>
+                  <td scope="row">{{ prop['size'] }}</td>
                   <td scope="row">{{ prop['status'] }}</td>
                   <td scope="row"><a href="/{{ data['mode'] }}/{{ cid }}">Edit</a></td>
                 </tr>
