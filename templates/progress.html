@@ -13,13 +13,21 @@
     <p>
         <div class="row g-5">
           <div class="col-md-12 overflow-auto">
-              <table class="table table-hover">
+              <table id="table" class="table table-hover"
+                     data-toggle="table"
+                     data-search="true"
+                     data-show-columns="false"
+                     data-sortable="true"
+                     data-sort-reset="true"
+                     data-sort-name="size"
+                     data-sort-order="desc"
+                     data-buttons="table_buttons">
               <thead>
                 <tr>
                     <th scope="col">Cluster</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Size</th>
-                    <th scope="col">Status</th>
+                    <th scope="col" data-sortable="true">Name</th>
+                    <th scope="col" data-sortable="true" data-field="size">Size</th>
+                    <th scope="col" data-sortable="true" data-field="status">Status</th>
                     <th scope="col"></th>
                 </tr>
               </thead>
@@ -92,4 +100,57 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+var table = $('#table');
+var LS_KEY = 'progress-table-only-show-unannotated';
+var ICON_SHOW = 'bi-eye-fill';
+var ICON_HIDE = 'bi-eye-slash-fill';
+
+$(function() {
+    table.bootstrapTable();
+    // $table.removeClass('table-bordered');
+})
+
+function table_buttons () {
+    return {
+        btn_toggle_status: {
+            text: 'Toggle Status',
+            iconsPrefix: 'bi',
+            icon: ICON_HIDE,
+            event: function () {
+                if(!localStorage.getItem(LS_KEY)) {
+                    localStorage.setItem(LS_KEY, 'on');
+                } else {
+                    localStorage.removeItem(LS_KEY);
+                }
+                apply_progress_table_status();
+            },
+            attributes: {
+                title: 'Toggle Status' // tooltip
+            }
+        }
+    }
+}
+
+function apply_progress_table_status() {
+    var icon = $('button[name=btn_toggle_status] > i');
+    if (localStorage.getItem(LS_KEY) === 'on') {
+        table.bootstrapTable('filterBy', {status: ['']});
+        icon.removeClass(ICON_HIDE);
+        icon.addClass(ICON_SHOW);
+    } else {
+        table.bootstrapTable('filterBy', {});
+        icon.removeClass(ICON_SHOW);
+        icon.addClass(ICON_HIDE);
+    }
+}
+
+$(document).ready(function(){
+    apply_progress_table_status();
+});
+
+</script>
 {% endblock %}
