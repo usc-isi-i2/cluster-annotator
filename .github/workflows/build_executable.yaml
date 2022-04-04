@@ -27,10 +27,8 @@ jobs:
       run: python pyi_run.py
 
     - name: Apply post-processing
-      run: |
-          if [ ${{runner.os}} == "macos-11" ]; then
-            chmod +x dist/annotator
-          fi
+      if: ${{matrix.os}} == 'macos-11'
+      run: chmod +x dist/annotator
 
     - name: Upload installer
       uses: actions/upload-artifact@v2
