@@ -12,7 +12,7 @@ jobs:
         os: ['macos-11', 'windows-2022']
 
     steps:
-    - name: Checkout cde
+    - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Set up python
@@ -25,6 +25,12 @@ jobs:
 
     - name: Build installer
       run: python pyi_run.py
+
+    - name: Apply post-processing
+      run: |
+          if [ ${{runner.os}} == "macos-11" ]; then
+            chmod +x dist/annotator
+          fi
 
     - name: Upload installer
       uses: actions/upload-artifact@v2
