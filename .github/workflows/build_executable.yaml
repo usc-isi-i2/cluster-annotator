@@ -21,5 +21,5 @@ jobs:
     - run: python pyi_run.py
 
     - uses: actions/upload-artifact@v2
-    with:
-      path: dist/*
+      with:
+        path: dist/*
