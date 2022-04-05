@@ -26,11 +26,16 @@ jobs:
     - name: Build installer
       run: python pyi_run.py
 
-    - name: Apply post-processing
-      run: tar -cvf dist/annotator.tar dist
+    - name: Apply post-processing (MacOS)
+      if: ${{matrix.os}} == 'macos-11'
+      run: |
+        cd dist
+        tar -cvf annotator.tar annotator
+        rm -rf annotator annotator.app
+        cd ..
 
     - name: Upload installer
       uses: actions/upload-artifact@v2
       with:
         name: annotator_${{matrix.os}}
-        path: dist/annotator.tar
+        path: dist/*
