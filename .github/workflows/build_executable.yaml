@@ -27,7 +27,7 @@ jobs:
       run: python pyi_run.py
 
     - name: Apply post-processing (MacOS)
-      if: ${{matrix.os}} == 'macos-11'
+      if: matrix.os == 'macos-11'
       run: |
         cd dist
         tar -cvf annotator.tar annotator
