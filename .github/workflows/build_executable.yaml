@@ -27,11 +27,10 @@ jobs:
       run: python pyi_run.py
 
     - name: Apply post-processing
-      if: ${{matrix.os}} == 'macos-11'
-      run: chmod +x dist/annotator
+      run: tar -cvf dist/annotator.tar dist
 
     - name: Upload installer
       uses: actions/upload-artifact@v2
       with:
         name: annotator_${{matrix.os}}
-        path: dist/*
+        path: dist/annotator.tar
