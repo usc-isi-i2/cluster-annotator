@@ -41,7 +41,7 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt pyinstaller
 
-    - name: Build installer
+    - name: Build artifacts
       run: python pyi_run.py
 
     - name: Apply post-processing (MacOS)
@@ -49,27 +49,29 @@ jobs:
       run: |
         cd dist
         tar -cvf annotator.tar annotator
+        zip -r annotator_${{matrix.os}}.zip annotator.tar
         rm -rf annotator annotator.app
         cd ..
 
-    - name: Package files
+    - name: Apply post-processing (Windows)
+      if: matrix.os == 'windows-2022'
       run: |
         cd dist
-        zip -r annotator_${{matrix.os}}.zip *
+        powershell Compress-Archive annotator.exe annotator_${{matrix.os}}.zip
         cd ..
 
-#    - name: Upload artifact
+#    - name: Upload artifacts
 #      uses: actions/upload-artifact@v2
 #      with:
 #        name: annotator_${{matrix.os}}
 #        path: dist/*
 #
-#    - name: Download artifact
+#    - name: Download artifacts
 #      uses: actions/download-artifact@v2
 #      with:
 #        name: annotator_${{matrix.os}}
 
-    - name: Upload artifact to release
+    - name: Upload artifacts to release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
