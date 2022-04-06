@@ -52,16 +52,22 @@ jobs:
         rm -rf annotator annotator.app
         cd ..
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: annotator_${{matrix.os}}
-        path: dist/*
+    - name: Package files
+      run: |
+        cd dist
+        zip -r annotator_${{matrix.os}}.zip *
+        cd ..
 
-    - name: Download artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: annotator_${{matrix.os}}
+#    - name: Upload artifact
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: annotator_${{matrix.os}}
+#        path: dist/*
+#
+#    - name: Download artifact
+#      uses: actions/download-artifact@v2
+#      with:
+#        name: annotator_${{matrix.os}}
 
     - name: Upload artifact to release
       uses: actions/upload-release-asset@v1
@@ -69,6 +75,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }}
-        asset_path: annotator_${{matrix.os}}.zip
+        asset_path: dist/annotator_${{matrix.os}}.zip
         asset_name: annotator_${{matrix.os}}.zip
         asset_content_type: application/zip
